@@ -70,5 +70,5 @@ co() {
 }
 
 # Added by Windsurf
-export PATH="/Users/dillion/.codeium/windsurf/bin:$PATH"
+export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 alias su="surf"
