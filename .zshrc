@@ -54,6 +54,21 @@ line() {
   sed -n "${lineno}p"
 }
 
+# grep with default options
+gr() {
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: gr <pattern> [file...]"
+    echo "       ... | gr <pattern>"
+    return 1
+  elif [[ -t 0 ]]; then
+    # No stdin input, use recursive grep
+    grep -r -n -i --color=auto "$@"
+  else
+    # Has stdin input, use regular grep
+    grep -n -i --color=auto "$@"
+  fi
+}
+
 alias nr="npm run"
 alias ni="npm install"
 alias nid="npm install -D" 
