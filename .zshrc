@@ -22,12 +22,21 @@ alias gst="git stash -u"
 alias gstp="git stash pop"
 alias gnoedit="git commit --amend --no-edit"
 
+alias nr="npm run"
+alias ni="npm install"
+alias nid="npm install -D" 
+alias nu="npm uninstall"
+alias nt="npm test"
+
 alias c="pbcopy"
 alias arg="xargs"
 
+alias delete="rm -rf"
+alias copy="cp -R"
+
 # custom functions
 # git log
-gl() {
+function gl {
   if [[ $# -eq 0 ]]; then
     git --no-pager log -1
   else
@@ -36,7 +45,7 @@ gl() {
 }
 
 # find files
-ff() {
+function ff {
   local search_dir="${1:-.}"
   local filename="${2:-*}"
   local depth="${3}"
@@ -49,13 +58,14 @@ ff() {
 }
 
 # get a particular line from output
-line() {
+function line {
   local lineno=$1
   sed -n "${lineno}p"
 }
 
 # grep with default options
-gr() {
+unalias gr
+function gr {
   if [[ $# -eq 0 ]]; then
     echo "Usage: gr <pattern> [file...]"
     echo "       ... | gr <pattern>"
@@ -69,14 +79,8 @@ gr() {
   fi
 }
 
-alias nr="npm run"
-alias ni="npm install"
-alias nid="npm install -D" 
-alias nu="npm uninstall"
-alias nt="npm test"
 
-
-co() {
+function co {
   # Use the provided argument, or default to the current directory
   local target=$(realpath "${1:-$(pwd)}")
 
