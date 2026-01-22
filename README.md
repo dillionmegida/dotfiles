@@ -7,7 +7,7 @@
 git clone <your-repo-url> ~/dotfiles
 
 # Create symbolic links for all managed files
-ln -s ~/dotfiles/.zshrc ~/.zshrc
+ln -s [path-to]/dotfiles/.zshrc ~/.zshrc
 
 # Reload your shell configuration
 source ~/.zshrc
