@@ -1,4 +1,4 @@
-[ -f ~/zshrc_default ] && source ~/zshrc_default
+[ -f ~/.zshrc_default ] && source ~/.zshrc_default
 
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -21,6 +21,7 @@ alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
 alias gnoedit="git commit --amend --no-edit"
+alias glastcom="git reset --soft HEAD~1"
 
 alias nr="npm run"
 alias ni="npm install"
