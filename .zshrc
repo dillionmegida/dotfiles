@@ -90,4 +90,24 @@ function co {
 
 # Added by Windsurf
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
-alias su="surf"
+
+function su {
+  if (( $+commands[surf] )); then
+    surf "$@"
+  elif (( $+commands[windsurf] )); then
+    windsurf "$@"
+  else
+    echo "Neither surf nor windsurf found" >&2
+    return 1
+  fi
+}
+
+alias shr="ssh-keygen -R" # remove host from known_hosts
+alias sh="ssh"
+. "$HOME/.local/bin/env"
+
+
+# Ghostty shell integration
+if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
+  source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi
