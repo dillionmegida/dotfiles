@@ -1,5 +1,8 @@
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
 
+# Absolute directory of this .zshrc (portable across machines)
+DOTFILES_DIR="${${(%):-%x}:a:h}"
+
 export ZSH="$HOME/.oh-my-zsh"
 
 #theme
@@ -105,6 +108,12 @@ function su {
 
 alias shr="ssh-keygen -R" # remove host from known_hosts
 alias sh="ssh"
+
+# stale branches - find/delete branches already merged
+function stale {
+  python3 "$DOTFILES_DIR/dotfiles/scripts/stale_branches.py" "$@"
+}
+
 . "$HOME/.local/bin/env"
 
 
@@ -112,3 +121,7 @@ alias sh="ssh"
 if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
   source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
 fi
+
+# Override oh-my-zsh's SHARE_HISTORY
+unsetopt SHARE_HISTORY
+setopt APPEND_HISTORY
