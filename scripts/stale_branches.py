@@ -203,6 +203,9 @@ def check_branch_long(branch, main_branch, master_diff_hashes, verbose):
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
+    import time
+    start = time.perf_counter()
+
     args = sys.argv[1:]
     main_branch = "master"
     delete = False
@@ -271,17 +274,32 @@ def main():
     found = 0
 
     if mode == "cherry":
-        for branch in branches:
-            if verbose:
+        if verbose:
+            for branch in branches:
                 box_line(f"🔎 Checking {branch}")
-            _, landed = check_branch_cherry(branch, main_branch)
-            if landed:
-                found += 1
-                if delete:
-                    run(["git", "branch", "-D", branch])
-                    box_line(f"🗑️  Deleted: {branch}")
-                else:
-                    box_line(f"✅  {branch}")
+                _, landed = check_branch_cherry(branch, main_branch)
+                if landed:
+                    found += 1
+                    if delete:
+                        run(["git", "branch", "-D", branch])
+                        box_line(f"🗑️  Deleted: {branch}")
+                    else:
+                        box_line(f"✅  {branch}")
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {
+                    executor.submit(check_branch_cherry, b, main_branch): b
+                    for b in branches
+                }
+                for future in as_completed(futures):
+                    branch, landed = future.result()
+                    if landed:
+                        found += 1
+                        if delete:
+                            run(["git", "branch", "-D", branch])
+                            box_line(f"🗑️  Deleted: {branch}")
+                        else:
+                            box_line(f"✅  {branch}")
 
     elif mode == "long":
         author = run(["git", "config", "user.name"]).stdout.strip()
@@ -330,6 +348,13 @@ def main():
         box_line("No matching branches found.")
     elif not delete:
         box_line("Run with --delete to remove these branches.")
+    
+    elapsed = time.perf_counter() - start
+    mins = int(elapsed // 60)
+    secs = elapsed % 60
+    duration = f"{mins}m {secs:.2f}s" if mins else f"{elapsed:.2f}s"
+    box_line("--")
+    box_line(f"⏱  Finished in {duration}")
     box_bottom()
 
 
