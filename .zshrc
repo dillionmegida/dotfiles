@@ -114,6 +114,14 @@ function stale {
   python3 "$DOTFILES_DIR/dotfiles/scripts/stale_branches.py" "$@"
 }
 
+# Time any command
+function t() {
+    local start=$EPOCHREALTIME
+    "$@"
+    local elapsed=$(( EPOCHREALTIME - start ))
+    printf "\n⏱  Finished in %.2fs\n" $elapsed
+}
+
 . "$HOME/.local/bin/env"
 
 
