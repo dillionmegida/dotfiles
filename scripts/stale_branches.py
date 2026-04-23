@@ -6,91 +6,25 @@
 # --no-remote  lists all local branches with no upstream tracking ref set
 
 import hashlib
-import re
+import os
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-try:
-    from wcwidth import wcswidth
-except ImportError:
-    def wcswidth(s):
-        return len(s)
+sys.path.insert(0, os.path.dirname(__file__))
+from boxprint import box_top, box_bottom, box_line
 
-WIDTH = 80
 BATCH_SIZE = 50
-
-_EMOJI_RE = re.compile(
-    "[\U0001F300-\U0001F9FF"
-    "\U00002600-\U000027BF"
-    "\U0001F000-\U0001FAFF"
-    "\U0000231A-\U0000231B"
-    "\U000023E9-\U000023F3"
-    "\U000023F8-\U000023FA]"
-    "[\U0000FE00-\U0000FE0F]?"
-)
-
-_VARIATION_SELECTOR_RE = re.compile("[\U0000FE00-\U0000FE0F]")
 
 
 def run(cmd):
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
-def emoji_count(text):
-    return len(_EMOJI_RE.findall(text))
-
-
-def visual_len(text):
-    stripped = _EMOJI_RE.sub("", text)
-    stripped = _VARIATION_SELECTOR_RE.sub("", stripped)  # catch any orphaned variation selectors
-    w = wcswidth(stripped)
-    return w if w >= 0 else len(stripped)
-
-
-# ── box helpers ──────────────────────────────────────────────────────────────
-
-def box_top():
-    print("+" + "-" * WIDTH + "+")
-    sys.stdout.flush()
-
-
-def box_bottom():
-    print("+" + "-" * WIDTH + "+")
-    sys.stdout.flush()
-
-
-def truncate(text, max_visual):
-    ellipsis = "..."
-    budget = max_visual - visual_len(ellipsis)
-    result = []
-    used = 0
-    for ch in text:
-        ch_w = visual_len(ch)
-        if used + ch_w > budget:
-            break
-        result.append(ch)
-        used += ch_w
-    return "".join(result) + ellipsis
-
-
-def box_line(text=""):
-    max_text = WIDTH - 5
-    if visual_len(text) > max_text:
-        text = truncate(text, max_text)
-    print(f"|  {text}\033[{WIDTH + 2}G|")
-    sys.stdout.flush()
-
-
 # ── diff hashing ─────────────────────────────────────────────────────────────
 
 def get_stripped_diff_hash(sha):
-    """
-    For a given SHA, extract only the changed lines (+ and -) per file,
-    ignoring context lines entirely. Hash filename + changed lines together
-    so two commits touching different files don't collide.
-    Returns a frozenset of hashes, one per file touched in the commit.
-    """
     result = subprocess.run(
         ["git", "show", "--format=", "-p", "--no-color", sha],
         capture_output=True
@@ -103,18 +37,16 @@ def get_stripped_diff_hash(sha):
 
     for line in raw.splitlines():
         if line.startswith("diff --git "):
-            # flush previous file
             if current_file and current_lines:
                 content = current_file + "\n" + "\n".join(current_lines)
                 file_hashes.add(hashlib.sha256(content.encode()).hexdigest())
             current_file = line
             current_lines = []
         elif line.startswith(("--- ", "+++ ")):
-            continue  # skip file headers
+            continue
         elif line.startswith("+") or line.startswith("-"):
             current_lines.append(line)
 
-    # flush last file
     if current_file and current_lines:
         content = current_file + "\n" + "\n".join(current_lines)
         file_hashes.add(hashlib.sha256(content.encode()).hexdigest())
@@ -123,10 +55,6 @@ def get_stripped_diff_hash(sha):
 
 
 def get_diff_hashes_for_shas(shas):
-    """
-    Returns a set of frozensets — one frozenset per commit.
-    Each frozenset represents the stripped diff fingerprint of that commit.
-    """
     if not shas:
         return set()
 
@@ -135,7 +63,7 @@ def get_diff_hashes_for_shas(shas):
         batch = shas[i:i + BATCH_SIZE]
         for sha in batch:
             h = get_stripped_diff_hash(sha)
-            if h:  # skip empty commits
+            if h:
                 result.add(h)
     return result
 
@@ -143,14 +71,12 @@ def get_diff_hashes_for_shas(shas):
 # ── modes ────────────────────────────────────────────────────────────────────
 
 def check_branch_cherry(branch, main_branch):
-    """Uses git cherry — fast but can miss branches where files drifted after landing."""
     result = run(["git", "cherry", main_branch, branch])
     unpicked = sum(1 for line in result.stdout.splitlines() if line.startswith("+"))
     return branch, unpicked == 0
 
 
 def build_master_diff_hashes(main_branch, since, author):
-    """Compute stripped diff hashes for your commits on origin/master in the time window."""
     log = run([
         "git", "log", "--format=%H",
         f"--since={since}",
@@ -163,7 +89,6 @@ def build_master_diff_hashes(main_branch, since, author):
 
 
 def get_branch_diff_hashes(branch, main_branch):
-    """Compute stripped diff hashes for commits on the branch not in origin/master."""
     log = run([
         "git", "log", "--format=%H", "--no-merges",
         branch, f"^origin/{main_branch}"
@@ -173,7 +98,6 @@ def get_branch_diff_hashes(branch, main_branch):
 
 
 def check_branch_long(branch, main_branch, master_diff_hashes, verbose):
-    """Check if all of the branch's stripped diffs exist in master's diff set."""
     if verbose:
         box_line(f"🔎 Checking {branch}")
 
@@ -203,7 +127,6 @@ def check_branch_long(branch, main_branch, master_diff_hashes, verbose):
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    import time
     start = time.perf_counter()
 
     args = sys.argv[1:]
@@ -308,7 +231,6 @@ def main():
         box_line(f"   {len(shas)} commits → {len(master_diff_hashes)} diff fingerprints")
         box_line()
 
-        # verbose runs sequentially to avoid interleaved output from threads
         if verbose:
             for branch in branches:
                 branch, landed = check_branch_long(branch, main_branch, master_diff_hashes, verbose)
@@ -321,7 +243,10 @@ def main():
                         box_line(f"✅  {branch}")
         else:
             with ThreadPoolExecutor(max_workers=workers) as executor:
-                futures = {executor.submit(check_branch_long, b, main_branch, master_diff_hashes, False): b for b in branches}
+                futures = {
+                    executor.submit(check_branch_long, b, main_branch, master_diff_hashes, False): b
+                    for b in branches
+                }
                 for future in as_completed(futures):
                     branch, landed = future.result()
                     if landed:
@@ -335,7 +260,7 @@ def main():
     elif mode == "no-remote":
         for branch in branches:
             result = run(["git", "rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}"])
-            if result.returncode != 0:  # no upstream set
+            if result.returncode != 0:
                 found += 1
                 if delete:
                     run(["git", "branch", "-D", branch])
@@ -348,7 +273,7 @@ def main():
         box_line("No matching branches found.")
     elif not delete:
         box_line("Run with --delete to remove these branches.")
-    
+
     elapsed = time.perf_counter() - start
     mins = int(elapsed // 60)
     secs = elapsed % 60

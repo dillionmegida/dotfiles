@@ -130,6 +130,10 @@ if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
   source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
 fi
 
+function boxprint() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/boxprint.py" "$@"
+}
+
 # Override oh-my-zsh's SHARE_HISTORY
 unsetopt SHARE_HISTORY
 setopt APPEND_HISTORY
@@ -138,4 +142,4 @@ function uncommit {
   python3 "$DOTFILES_DIR/dotfiles/scripts/uncommit.py" "$@"
 }
 
-alias reload="source ~/.zshrc && echo 'zshrc reloaded'"
+alias reload="source ~/.zshrc && boxprint 'zshrc reloaded 🔄'"
