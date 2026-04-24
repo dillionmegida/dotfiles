@@ -78,9 +78,20 @@ class Box:
     def line(self, text=""):
         box_line(text, self.width)
 
+
+def box_stdin(width=WIDTH):
+    box_top(width)
+    for line in sys.stdin:
+        box_line(line.rstrip("\n"), width)
+    box_bottom(width)
+
+
 if __name__ == "__main__":
     import sys
-    msg = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
-    box_top()
-    box_line(msg)
-    box_bottom()
+    if not sys.stdin.isatty():
+        box_stdin()
+    else:
+        msg = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        box_top()
+        box_line(msg)
+        box_bottom()

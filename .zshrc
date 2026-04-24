@@ -130,7 +130,7 @@ if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
   source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
 fi
 
-function boxprint() {
+function box() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/boxprint.py" "$@"
 }
 
@@ -142,4 +142,4 @@ function uncommit {
   python3 "$DOTFILES_DIR/dotfiles/scripts/uncommit.py" "$@"
 }
 
-alias reload="source ~/.zshrc && boxprint 'zshrc reloaded 🔄'"
+alias reload="source ~/.zshrc && box 'zshrc reloaded 🔄'"
