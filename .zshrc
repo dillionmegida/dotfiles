@@ -134,6 +134,10 @@ function box() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/boxprint.py" "$@"
 }
 
+function ignore() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/gitignore_local.py" "$@"
+}
+
 # Override oh-my-zsh's SHARE_HISTORY
 unsetopt SHARE_HISTORY
 setopt APPEND_HISTORY
