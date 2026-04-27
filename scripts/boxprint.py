@@ -87,11 +87,27 @@ def box_stdin(width=WIDTH):
 
 
 if __name__ == "__main__":
-    import sys
     if not sys.stdin.isatty():
         box_stdin()
+    elif len(sys.argv) > 1:
+        cmd = sys.argv[1]
+        msg = " ".join(sys.argv[2:])
+
+        if cmd == "start":
+            box_top()
+            box_line(msg)
+        elif cmd == "end":
+            box_line(msg)
+            box_bottom()
+        elif cmd == "line":
+            box_line(msg)
+        else:
+            # no subcommand, treat all args as message
+            msg = " ".join(sys.argv[1:])
+            box_top()
+            box_line(msg)
+            box_bottom()
     else:
-        msg = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
         box_top()
-        box_line(msg)
+        box_line()
         box_bottom()

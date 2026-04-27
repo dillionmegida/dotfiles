@@ -120,9 +120,6 @@ function t() {
     printf "\n⏱  Finished in %.2fs\n" $elapsed
 }
 
-. "$HOME/.local/bin/env"
-
-
 # Ghostty shell integration
 if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
   source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
@@ -145,5 +142,31 @@ function uncommit {
 }
 
 alias reload="source ~/.zshrc && box 'zshrc reloaded 🔄'"
+
+function dot() {
+  local dotfiles="$DOTFILES_DIR/dotfiles"
+  local dirty=$(git -C "$dotfiles" status --porcelain)
+
+  box start "🔄 pulling... "
+  box line ""
+
+  if [[ -n "$dirty" ]]; then
+      git -C "$dotfiles" stash -u &>/dev/null
+      git -C "$dotfiles" pull &>/dev/null
+      git -C "$dotfiles" stash pop &>/dev/null
+  else
+      git -C "$dotfiles" pull &>/dev/null
+  fi
+
+  source ~/.zshrc
+  box end "✅ reloaded"
+}
+
+# ---
+# ---
+# ---
+# ---
+# ---
+# ---
 
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
