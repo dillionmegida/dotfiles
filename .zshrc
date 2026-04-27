@@ -1,7 +1,7 @@
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
 
 # Absolute directory of this .zshrc (portable across machines)
-DOTFILES_DIR="${${(%):-%x}:a:h}"
+DOTFILES_DIR="${${(%):-%N}:A:h:h}"
 
 export ZSH="$HOME/.oh-my-zsh"
 
