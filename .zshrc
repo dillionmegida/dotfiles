@@ -170,6 +170,15 @@ function last() {
     eval "$cmd"
 }
 
+function delb() {
+    # support multiline paste: collect all args or stdin
+    if [[ ! -t 0 ]]; then
+        python3 "$DOTFILES_DIR/dotfiles/scripts/del_branches.py" "$@"
+    else
+        python3 "$DOTFILES_DIR/dotfiles/scripts/del_branches.py" "$@"
+    fi
+}
+
 # ---
 # ---
 # ---

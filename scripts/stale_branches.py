@@ -81,7 +81,6 @@ def build_master_diff_hashes(main_branch, since, author):
         "git", "log", "--format=%H",
         f"--since={since}",
         f"--author={author}",
-        "--no-merges",
         f"origin/{main_branch}"
     ])
     shas = log.stdout.strip().splitlines()
