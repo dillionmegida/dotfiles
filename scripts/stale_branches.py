@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # stale-branches.py
 # Finds (and optionally deletes) local branches whose changes are already in master.
-# --cherry     uses git cherry (fast, but misses branches where files drifted after landing)
-# --long       uses stripped diff hashing (context-independent, survives rebase bots)
-# --no-remote  lists all local branches with no upstream tracking ref set
+# -c/--cherry     uses git cherry (fast, but misses branches where files drifted after landing)
+# -l/--long       uses stripped diff hashing (context-independent, survives rebase bots)
+# -r/--no-remote  lists all local branches with no upstream tracking ref set
 
 import hashlib
 import os
@@ -140,36 +140,39 @@ def main():
     for arg in args:
         if arg in ("--delete", "-d"):
             delete = True
-        elif arg == "--cherry":
+        elif arg in ("--show", "-s"):
+            delete = False
+        elif arg in ("--cherry", "-c"):
             mode = "cherry"
-        elif arg == "--long":
+        elif arg in ("--long", "-l"):
             mode = "long"
-        elif arg == "--no-remote":
+        elif arg in ("--no-remote", "-r"):
             mode = "no-remote"
         elif arg in ("--verbose", "-v"):
             verbose = True
         elif arg in ("--help", "-h"):
-            print("Usage: python stale-branches.py [main-branch] --cherry|--long|--no-remote [--delete] [--verbose]")
+            print("Usage: python stale-branches.py [main-branch] -c|-l|-r [-s|-d] [-v]")
             print()
-            print("  main-branch     Branch to compare against (default: master)")
-            print("  --cherry        Fast check using git cherry")
-            print("  --long          Accurate check using stripped diff hashing")
-            print("  --no-remote     List branches with no upstream tracking ref")
-            print("  --delete, -d    Actually delete the stale branches")
-            print("  --verbose, -v   Print progress for each branch")
+            print("  main-branch         Branch to compare against (default: master)")
+            print("  -c, --cherry        Fast check using git cherry")
+            print("  -l, --long          Accurate check using stripped diff hashing")
+            print("  -r, --no-remote     List branches with no upstream tracking ref")
+            print("  -s, --show          Show matching branches (default)")
+            print("  -d, --delete        Delete the matching branches")
+            print("  -v, --verbose       Print progress for each branch")
             print()
             print("Examples:")
-            print("  python stale-branches.py --cherry")
-            print("  python stale-branches.py --long --verbose")
-            print("  python stale-branches.py main --long --delete")
-            print("  python stale-branches.py --no-remote")
-            print("  python stale-branches.py --no-remote --delete")
+            print("  python stale-branches.py -c")
+            print("  python stale-branches.py -l -v")
+            print("  python stale-branches.py main -l -d")
+            print("  python stale-branches.py -r")
+            print("  python stale-branches.py -r -d")
             sys.exit(0)
         else:
             main_branch = arg
 
     if mode is None:
-        print("Please specify a mode: --cherry, --long, or --no-remote")
+        print("Please specify a mode: -c/--cherry, -l/--long, or -r/--no-remote")
         print("Run with --help for usage.")
         sys.exit(1)
 
@@ -272,7 +275,7 @@ def main():
     if found == 0:
         box_line("No matching branches found.")
     elif not delete:
-        box_line("Run with --delete to remove these branches.")
+        box_line("Run with -d/--delete to remove these branches.")
 
     elapsed = time.perf_counter() - start
     mins = int(elapsed // 60)
