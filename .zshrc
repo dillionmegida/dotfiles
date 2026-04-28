@@ -160,6 +160,16 @@ function dot() {
   box end "✅ reloaded"
 }
 
+function last() {
+    local cmd=$(history | grep "$*" | grep -v "last $*" | tail -1 | sed 's/^ *[0-9]* *//')
+    if [[ -z "$cmd" ]]; then
+        box "No history found for: $*"
+        return 1
+    fi
+    box "⏮  $cmd"
+    eval "$cmd"
+}
+
 # ---
 # ---
 # ---
