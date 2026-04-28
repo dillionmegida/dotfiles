@@ -66,7 +66,6 @@ function line {
 }
 
 # grep with default options
-unalias gr
 function gr {
   if [[ $# -eq 0 ]]; then
     echo "Usage: gr <pattern> [file...]"
