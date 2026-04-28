@@ -104,7 +104,6 @@ function su {
 }
 
 alias shr="ssh-keygen -R" # remove host from known_hosts
-alias sh="ssh"
 
 # stale branches - find/delete branches already merged
 function stale {
