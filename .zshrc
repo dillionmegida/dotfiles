@@ -21,6 +21,7 @@ alias gc="git checkout"
 alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
+alias gamend="git commit --amend"
 alias gnoedit="git commit --amend --no-edit"
 alias glastcom="git reset --soft HEAD~1"
 
