@@ -171,6 +171,8 @@ function last() {
     eval "$cmd"
 }
 
+alias remove-from-history='$DOTFILES_DIR/dotfiles/scripts/remove_from_history.py'
+
 function delb() {
     # support multiline paste: collect all args or stdin
     if [[ ! -t 0 ]]; then
