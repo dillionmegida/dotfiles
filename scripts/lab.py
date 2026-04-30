@@ -3,20 +3,24 @@
 
 import os
 import subprocess
-import sys
+import sys, json
 
 sys.path.insert(0, os.path.dirname(__file__))
 from boxprint import box_top, box_bottom, box_line
 
-BASE_URL = "https://gitlab.is.adyen.com"
-
-REPO_MAP = {
-    "adyen": "adyen/adyen-main",
-}
-
-REPO_ROOTS = {
-    "adyen/adyen-main": "adyen-main",
-}
+def load_meta():
+    raw = os.environ.get("LAB_META")
+    if not raw:
+        return None, {}, {}
+    try:
+        data = json.loads(raw)
+        base_url = data.get("base_url", "https://gitlab.com")
+        repos = data.get("repos", {})
+        repo_map = {k: v["repo"] for k, v in repos.items()}
+        repo_roots = {v["repo"]: v["root"] for v in repos.values()}
+        return base_url, repo_map, repo_roots
+    except (json.JSONDecodeError, KeyError):
+        return None, {}, {}
 
 def find_git_root():
     current = os.path.abspath(os.getcwd())
@@ -78,6 +82,10 @@ def error(msg):
     sys.exit(1)
 
 def main():
+    BASE_URL, REPO_MAP, REPO_ROOTS = load_meta()
+    if not BASE_URL:
+        error("LAB_META is not set or invalid. Add it to your .zshrc.")
+
     args = sys.argv[1:]
 
     ignore_check = False
