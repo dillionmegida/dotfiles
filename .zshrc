@@ -37,150 +37,25 @@ alias arg="xargs"
 alias delete="rm -rf"
 alias copy="cp -R"
 
-# custom functions
-# git log
-function gl {
-  if [[ $# -eq 0 ]]; then
-    git --no-pager log -1
-  else
-    git log "$@"
-  fi
-}
-
-# find files
-function ff {
-  local search_dir="${1:-.}"
-  local filename="${2:-*}"
-  local depth="${3}"
-
-  if [[ -z "$depth" ]]; then
-    find "$search_dir" -type f -name "${filename}*"
-  else
-    find "$search_dir" -type f -maxdepth "$depth" -name "${filename}*"
-  fi
-}
-
-# get a particular line from output
-function line {
-  local lineno=$1
-  sed -n "${lineno}p"
-}
-
-# grep with default options
-function gr {
-  if [[ $# -eq 0 ]]; then
-    echo "Usage: gr <pattern> [file...]"
-    echo "       ... | gr <pattern>"
-    return 1
-  elif [[ -t 0 ]]; then
-    # No stdin input, use recursive grep
-    grep -r -n -i --color=auto "$@"
-  else
-    # Has stdin input, use regular grep
-    grep -n -i --color=auto "$@"
-  fi
-}
-
-
-function co {
-  # Use the provided argument, or default to the current directory
-  local target=$(realpath "${1:-$(pwd)}")
-
-  echo "Opening VSCodium for: $target"
-  open "vscodium://file/$target?window=new"
-}
-
 # Added by Windsurf
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
-function su {
-  if (( $+commands[surf] )); then
-    surf "$@"
-  elif (( $+commands[windsurf] )); then
-    windsurf "$@"
-  else
-    echo "Neither surf nor windsurf found" >&2
-    return 1
-  fi
-}
-
 alias shr="ssh-keygen -R" # remove host from known_hosts
-
-# stale branches - find/delete branches already merged
-function stale {
-  python3 "$DOTFILES_DIR/dotfiles/scripts/stale_branches.py" "$@"
-}
-
-# Time any command
-function t() {
-    local start=$EPOCHREALTIME
-    "$@"
-    local elapsed=$(( EPOCHREALTIME - start ))
-    printf "\n⏱  Finished in %.2fs\n" $elapsed
-}
 
 # Ghostty shell integration
 if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
   source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
 fi
 
-function box() {
-    python3 "$DOTFILES_DIR/dotfiles/scripts/boxprint.py" "$@"
-}
-
-function ignore() {
-    python3 "$DOTFILES_DIR/dotfiles/scripts/gitignore_local.py" "$@"
-}
-
 # Override oh-my-zsh's SHARE_HISTORY
 unsetopt SHARE_HISTORY
 setopt APPEND_HISTORY
 
-function uncommit {
-  python3 "$DOTFILES_DIR/dotfiles/scripts/uncommit.py" "$@"
-}
-
 alias reload="source ~/.zshrc && box 'zshrc reloaded 🔄'"
-
-function dot() {
-  local dotfiles="$DOTFILES_DIR/dotfiles"
-  local dirty=$(git -C "$dotfiles" status --porcelain)
-
-  box start "🔄 pulling... "
-  box line ""
-
-  if [[ -n "$dirty" ]]; then
-      git -C "$dotfiles" stash -u &>/dev/null
-      git -C "$dotfiles" pull &>/dev/null
-      git -C "$dotfiles" stash pop &>/dev/null
-  else
-      git -C "$dotfiles" pull &>/dev/null
-  fi
-
-  source ~/.zshrc
-  box end "✅ reloaded"
-}
-
-function last() {
-    local cmd=$(history | grep "$*" | grep -v "last $*" | tail -1 | sed 's/^ *[0-9]* *//')
-    if [[ -z "$cmd" ]]; then
-        box "No history found for: $*"
-        return 1
-    fi
-    box "⏮  $cmd"
-    eval "$cmd"
-}
 
 alias remove-from-history='$DOTFILES_DIR/dotfiles/scripts/remove_from_history.py'
 
-function delb() {
-    # support multiline paste: collect all args or stdin
-    if [[ ! -t 0 ]]; then
-        python3 "$DOTFILES_DIR/dotfiles/scripts/del_branches.py" "$@"
-    else
-        python3 "$DOTFILES_DIR/dotfiles/scripts/del_branches.py" "$@"
-    fi
-}
+source "$DOTFILES_DIR/dotfiles/functions.zsh"
 
 # ---
 # ---

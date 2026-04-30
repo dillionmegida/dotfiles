@@ -76,15 +76,21 @@ def check_branch_cherry(branch, main_branch):
     return branch, unpicked == 0
 
 
-def build_master_diff_hashes(main_branch, since, author):
+def build_master_diff_hashes(main_branch, since, author, workers):
     log = run([
         "git", "log", "--format=%H",
         f"--since={since}",
-        f"--author={author}",
+        # f"--author={author}",
         f"origin/{main_branch}"
     ])
     shas = log.stdout.strip().splitlines()
-    return shas, get_diff_hashes_for_shas(shas)
+    
+    result = set()
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for h in executor.map(get_stripped_diff_hash, shas):
+            if h:
+                result.add(h)
+    return shas, result
 
 
 def get_branch_diff_hashes(branch, main_branch):
@@ -133,7 +139,7 @@ def main():
     delete = False
     mode = None
     verbose = False
-    since = "1 year ago"
+    since = "12 months ago"
     workers = 8
 
     for arg in args:
@@ -229,7 +235,7 @@ def main():
     elif mode == "long":
         author = run(["git", "config", "user.name"]).stdout.strip()
         box_line(f"⏳ Indexing {main_branch} commits by {author}...")
-        shas, master_diff_hashes = build_master_diff_hashes(main_branch, since, author)
+        shas, master_diff_hashes = build_master_diff_hashes(main_branch, since, author, workers)
         box_line(f"   {len(shas)} commits → {len(master_diff_hashes)} diff fingerprints")
         box_line()
 
