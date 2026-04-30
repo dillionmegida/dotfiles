@@ -31,18 +31,73 @@ def visual_len(text):
     return w if w >= 0 else len(stripped)
 
 
-def truncate(text, max_visual):
-    ellipsis = "..."
-    budget = max_visual - visual_len(ellipsis)
-    result = []
-    used = 0
-    for ch in text:
-        ch_w = visual_len(ch)
-        if used + ch_w > budget:
-            break
-        result.append(ch)
-        used += ch_w
-    return "".join(result) + ellipsis
+def detect_indent(text):
+    """Return the leading whitespace of a string."""
+    return len(text) - len(text.lstrip(" "))
+
+
+def wrap_text(text, max_visual):
+    """
+    Wrap text to fit within max_visual characters per line.
+    Subsequent lines inherit the indentation of the first line.
+    Returns a list of lines.
+    """
+    if visual_len(text) <= max_visual:
+        return [text]
+
+    indent_count = detect_indent(text)
+    indent = " " * indent_count
+
+    lines = []
+    current_chars = []
+    current_len = 0
+    first_line = True
+    budget = max_visual
+
+    def flush():
+        nonlocal current_chars, current_len, first_line, budget
+        lines.append("".join(current_chars))
+        current_chars = []
+        current_len = 0
+        if first_line:
+            first_line = False
+            budget = max_visual - indent_count
+            current_chars = list(indent)
+            current_len = indent_count
+
+    words = re.split(r'(?<=\S) ', text)
+    for word in words:
+        space = 1 if (current_chars and current_len > indent_count) else 0
+        word_len = visual_len(word)
+
+        if current_len + space + word_len <= budget:
+            # fits on current line
+            if space:
+                current_chars.append(" ")
+                current_len += 1
+            current_chars.extend(list(word))
+            current_len += word_len
+        elif word_len > budget:
+            # word itself is too long — force break character by character
+            if space and current_len > indent_count:
+                current_chars.append(" ")
+                current_len += 1
+            for ch in word:
+                ch_w = visual_len(ch)
+                if current_len + ch_w > budget:
+                    flush()
+                current_chars.append(ch)
+                current_len += ch_w
+        else:
+            # word fits but not on current line — wrap to next
+            flush()
+            current_chars.extend(list(word))
+            current_len += word_len
+
+    if current_chars:
+        lines.append("".join(current_chars))
+
+    return lines
 
 
 def box_top(width=WIDTH):
@@ -56,10 +111,10 @@ def box_bottom(width=WIDTH):
 
 
 def box_line(text="", width=WIDTH):
-    max_text = width - 5
-    if visual_len(text) > max_text:
-        text = truncate(text, max_text)
-    print(f"|  {text}\033[{width + 2}G|")
+    max_text = width - 5  # account for "|  " prefix and " |" suffix (with ANSI jump)
+    lines = wrap_text(text, max_text)
+    for line in lines:
+        print(f"|  {line}\033[{width + 2}G|")
     sys.stdout.flush()
 
 
@@ -102,7 +157,6 @@ if __name__ == "__main__":
         elif cmd == "line":
             box_line(msg)
         else:
-            # no subcommand, treat all args as message
             msg = " ".join(sys.argv[1:])
             box_top()
             box_line(msg)
