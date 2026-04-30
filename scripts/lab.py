@@ -77,7 +77,7 @@ def open_url(url):
 
 def error(msg):
     box_top()
-    box_line(f"❌ {msg}")
+    box_line(f"❌  {msg}")
     box_bottom()
     sys.exit(1)
 

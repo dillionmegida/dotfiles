@@ -3,11 +3,11 @@
 ## On a New Machine
 
 ```bash
-# Clone this repository to your home directory
-git clone <your-repo-url> ~/dotfiles
+# Clone this repository
+git clone <your-repo-url> <path-to-dotfiles>
 
 # Create symbolic links for all managed files
-ln -s [path-to]/dotfiles/.zshrc ~/.zshrc
+ln -s <path-to-dotfiles>/.zshrc ~/.zshrc
 
 # Reload your shell configuration
 source ~/.zshrc
@@ -19,13 +19,13 @@ source ~/.zshrc
 
 ```bash
 # Move the dotfile to this repository
-mv ~/.config_file ~/dotfiles/.config_file
+mv ~/.config_file <path-to-dotfiles>/.config_file
 
 # Create the symbolic link
-ln -s ~/dotfiles/.config_file ~/.config_file
+ln -s <path-to-dotfiles>/.config_file ~/.config_file
 
 # Commit the changes
-cd ~/dotfiles
+cd <path-to-dotfiles>
 git add .config_file
 git commit -m "Add .config_file"
 git push
