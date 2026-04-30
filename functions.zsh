@@ -121,3 +121,7 @@ function gl {
 function lab() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/lab.py" "$@"
 }
+
+function sym() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/sym.py" "$@"
+}

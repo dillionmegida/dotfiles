@@ -23,9 +23,11 @@ _EMOJI_RE = re.compile(
 
 _VARIATION_SELECTOR_RE = re.compile("[\U0000FE00-\U0000FE0F]")
 
+_ANSI_RE = re.compile(r"\033\[[0-9;]*m")
 
 def visual_len(text):
-    stripped = _EMOJI_RE.sub("", text)
+    stripped = _ANSI_RE.sub("", text)       # strip ANSI codes first
+    stripped = _EMOJI_RE.sub("", stripped)
     stripped = _VARIATION_SELECTOR_RE.sub("", stripped)
     w = wcswidth(stripped)
     return w if w >= 0 else len(stripped)
@@ -95,7 +97,7 @@ def wrap_text(text, max_visual):
             current_len += word_len
 
     if current_chars:
-        lines.append("".join(current_chars))
+        lines.append(indent + "".join(current_chars))
 
     return lines
 
