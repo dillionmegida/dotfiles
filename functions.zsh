@@ -117,3 +117,7 @@ function gl {
     git log "$@"
   fi
 }
+
+function lab() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/lab.py" "$@"
+}
