@@ -139,8 +139,8 @@ def main():
     delete = False
     mode = None
     verbose = False
-    since = "12 months ago"
-    workers = 8
+    since = "5 months ago"
+    workers = 10
 
     for arg in args:
         if arg in ("--delete", "-d"):
@@ -292,4 +292,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        box_line()
+        box_line("⚠️ Interrupted by user")
+        box_bottom()
+        sys.exit(130)

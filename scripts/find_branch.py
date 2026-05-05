@@ -51,11 +51,22 @@ def main():
     box_top()
     if not branches:
         box_line(f"🔍 No branches found matching: {query}")
-    else:
-        box_line(f"🔍 {len(branches)} branch{'es' if len(branches) > 1 else ''} matching \"{query}\":")
+        box_bottom()
+        return
+
+    if len(branches) == 1:
+        branch = branches[0]
+        box_line(f"🔍 Found one branch: {branch}")
         box_line()
-        for branch in branches:
-            box_line(f"   {branch}")
+        box_line(f"   Running checkout...")
+        box_bottom()
+        subprocess.run(["git", "checkout", branch])
+        return
+
+    box_line(f"🔍 {len(branches)} branches matching \"{query}\":")
+    box_line()
+    for branch in branches:
+        box_line(f"   {branch}")
     box_bottom()
 
 if __name__ == "__main__":
