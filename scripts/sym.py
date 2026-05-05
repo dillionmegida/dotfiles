@@ -107,14 +107,14 @@ def main():
                 box_line(C.color(f"   ✅  {entry}", C.GREEN))
                 ok += 1
             elif status == "already_linked":
-                box_line(C.color("   ⚠️  already linked", C.YELLOW))
+                box_line(C.color(f"   ⚠️  {entry} — already linked", C.YELLOW))
                 skipped += 1
             elif status == "already_linked_elsewhere":
                 existing = os.readlink(entry_link)
-                box_line(C.color(f"   ⚠️  already linked elsewhere:{entry} (linked elsewhere → {existing})", C.YELLOW))
+                box_line(C.color(f"   ⚠️  {entry} — already linked elsewhere (linked elsewhere → {existing})", C.YELLOW))
                 skipped += 1
             elif status == "exists_file":
-                box_line(C.color(f"   📄  {entry} (exists as regular file, not a symlink)", C.YELLOW))
+                box_line(C.color(f"   📄  {entry} — exists as regular file, not a symlink", C.YELLOW))
                 skipped_file += 1
             else:
                 box_line(C.color(f"   ❌  {entry} — {msg}", C.RED))
