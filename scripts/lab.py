@@ -50,7 +50,6 @@ def get_repo_from_remote():
     if result.returncode != 0:
         return None
     remote = result.stdout.strip()
-    # handles both SSH and HTTPS remote formats
     for pattern in [
         r"gitlab.is.adyen.com[:/](.*?)(?:\.git)?$",
     ]:
@@ -61,10 +60,6 @@ def get_repo_from_remote():
     return None
 
 def strip_to_relative(path, repo_root_name):
-    """
-    Given an absolute path, strip everything up to and including the repo root dir.
-    e.g. /Users/dillion/adyen-main/ui/vue/src/Foo.vue -> ui/vue/src/Foo.vue
-    """
     parts = path.split(os.sep)
     try:
         idx = parts.index(repo_root_name)
@@ -81,6 +76,66 @@ def error(msg):
     box_bottom()
     sys.exit(1)
 
+def search_and_open(query, git_root, repo, branch, base_url):
+    result = subprocess.run(
+        ["git", "ls-files"],
+        capture_output=True, text=True, cwd=git_root
+    )
+    if result.returncode != 0:
+        error("git ls-files failed.")
+
+    all_files = result.stdout.splitlines()
+    matches = [f for f in all_files if query.lower() in f.lower()]
+
+    if not matches:
+        box_top()
+        box_line(f"🔍 No files found matching: {query}")
+        box_bottom()
+        return
+
+    if len(matches) == 1:
+        url = f"{base_url}/{repo}/-/blob/{branch}/{matches[0]}"
+        box_top()
+        box_line(f"🔍 Found: {matches[0]}")
+        box_line()
+        box_line(f"   Opening GitLab...")
+        box_line(f"   {url}")
+        box_bottom()
+        open_url(url)
+        return
+
+    box_top()
+    box_line(f"🔍 {len(matches)} files matching \"{query}\":")
+    box_line()
+    for i, f in enumerate(matches, 1):
+        box_line(f"   {i:>2}.  {f}")
+    box_line()
+    box_line("   Enter a number to open, or press Enter to cancel:")
+    box_bottom()
+
+    try:
+        choice = input("   > ").strip()
+    except (KeyboardInterrupt, EOFError):
+        print()
+        return
+
+    if not choice:
+        return
+
+    if not choice.isdigit() or not (1 <= int(choice) <= len(matches)):
+        box_top()
+        box_line("❌  Invalid selection.")
+        box_bottom()
+        sys.exit(1)
+
+    selected = matches[int(choice) - 1]
+    url = f"{base_url}/{repo}/-/blob/{branch}/{selected}"
+    box_top()
+    box_line(f"   Opening: {selected}")
+    box_line(f"   {url}")
+    box_bottom()
+    open_url(url)
+
 def main():
     BASE_URL, REPO_MAP, REPO_ROOTS = load_meta()
     if not BASE_URL:
@@ -89,21 +144,25 @@ def main():
     args = sys.argv[1:]
 
     ignore_check = False
+    search_mode = False
+
     if "-i" in args:
         ignore_check = True
         args = [a for a in args if a != "-i"]
+
+    if "-s" in args:
+        search_mode = True
+        args = [a for a in args if a != "-s"]
 
     repo = None
     branch = None
     filepath = None
     idx = 0
 
-    # resolve repo alias from first arg
     if args and args[0] in REPO_MAP:
         repo = REPO_MAP[args[0]]
         idx += 1
 
-    # resolve repo from git remote if not specified
     if not repo:
         repo = get_repo_from_remote()
 
@@ -112,7 +171,6 @@ def main():
 
     repo_root_name = REPO_ROOTS.get(repo, repo.split("/")[-1])
 
-    # next arg: branch or filepath?
     if idx < len(args):
         candidate = args[idx]
         ref_check = subprocess.run(
@@ -126,17 +184,24 @@ def main():
         if ref_check.returncode == 0 or ref_check2.returncode == 0:
             branch = candidate
             idx += 1
-        # else treat as filepath below
 
     if not branch:
         branch = get_default_branch()
 
-    # remaining arg is the filepath
     if idx < len(args):
         filepath = args[idx]
 
+    # — Search mode —
+    if search_mode:
+        if not filepath:
+            error("Usage: lab -s <query>")
+        git_root = find_git_root()
+        if not git_root:
+            error("Not inside a git repo.")
+        search_and_open(filepath, git_root, repo, branch, BASE_URL)
+        return
+
     if not filepath:
-        # no path — just open repo root
         url = f"{BASE_URL}/{repo}/-/tree/{branch}"
         box_top()
         box_line("🔗 Opening GitLab")
@@ -145,7 +210,6 @@ def main():
         open_url(url)
         return
 
-    # -i flag: skip all checks, open exact path as-is
     if ignore_check:
         url = f"{BASE_URL}/{repo}/-/blob/{branch}/{filepath.lstrip('/')}"
         box_top()
@@ -163,17 +227,23 @@ def main():
 
     abs_path = os.path.normpath(abs_path)
 
-    if not os.path.exists(abs_path):
-        cwd = os.getcwd()
-        if os.path.isabs(filepath):
-            error(f"Path does not exist: {abs_path}")
-        else:
-            error(f"Path does not exist: {cwd}/{filepath}")
-
     # strip repo root from path
     relative = strip_to_relative(abs_path, repo_root_name)
     if not relative:
         error(f"Path is not inside repo root '{repo_root_name}': {abs_path}")
+
+    # validate against the target branch in git, not the local filesystem
+    git_root = find_git_root()
+    if not git_root:
+        error("Not inside a git repo.")
+
+    check = subprocess.run(
+        ["git", "cat-file", "-e", f"{branch}:{relative}"],
+        capture_output=True,
+        cwd=git_root
+    )
+    if check.returncode != 0:
+        error(f"Path not found in branch '{branch}': {relative}")
 
     url = f"{BASE_URL}/{repo}/-/blob/{branch}/{relative}"
     box_top()
