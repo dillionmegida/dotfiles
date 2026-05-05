@@ -14,7 +14,11 @@ alias ga="git add"
 alias gc="git checkout"
 alias gcom="git commit -m"
 alias gs="git status"
+
 alias gb="git branch"
+alias gnb="git --no-pager branch"
+alias gbunset="git branch --unset-upstream"
+
 alias gps="git push"
 alias greb="git rebase"
 alias gc="git checkout"
