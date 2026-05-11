@@ -12,19 +12,25 @@ source $ZSH/oh-my-zsh.sh
 alias g="git"
 alias ga="git add"
 alias gc="git checkout"
-alias gcom="git commit -m"
 alias gs="git status"
 
 alias gb="git branch"
 alias gnb="git --no-pager branch"
 alias gbunset="git branch --unset-upstream"
 
+alias gpl="git pull"
 alias gps="git push"
+
 alias greb="git rebase"
+alias greba="git rebase --abort"
+alias grebc="git rebase --continue"
+
 alias gc="git checkout"
 alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
+
+alias gcom="git commit -m"
 alias gamend="git commit --amend"
 alias gnoedit="git commit --amend --no-edit"
 alias glastcom="git reset --soft HEAD~1"
@@ -44,7 +50,7 @@ alias copy="cp -R"
 # Added by Windsurf
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
-alias shr="ssh-keygen -R" # remove host from known_hosts
+alias sshr="ssh-keygen -R" # remove host from known_hosts
 
 # Ghostty shell integration
 if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then

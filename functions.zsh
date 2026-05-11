@@ -125,3 +125,7 @@ function lab() {
 function sym() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/sym.py" "$@"
 }
+
+function reb-edit() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/rebase_edit.py" "$@"
+}
