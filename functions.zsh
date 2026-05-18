@@ -129,3 +129,7 @@ function sym() {
 function reb-edit() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/rebase_edit.py" "$@"
 }
+
+function capture() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/capture.py" "$@"
+}
