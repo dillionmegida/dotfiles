@@ -112,7 +112,7 @@ function gl {
   if [[ $# -eq 0 ]]; then
     git --no-pager log -1
   else
-    git log "$@"
+    git --no-pager log -"$1"
   fi
 }
 

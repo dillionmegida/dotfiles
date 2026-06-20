@@ -37,6 +37,9 @@ def has_staged_changes():
 def main():
     args = sys.argv[1:]
 
+    yes = "-y" in args
+    args = [a for a in args if a != "-y"]
+
     if not args:
         box_top()
         box_line("❌ Error: No commit offset provided")
@@ -78,7 +81,10 @@ def main():
         box_line(f"   {line}")
     box_bottom()
 
-    answer = input("Proceed with these changes? [y/N] ").strip().lower()
+    if yes:
+        answer = "y"
+    else:
+        answer = input("Proceed with these changes? [y/N] ").strip().lower()
     if answer != "y":
         box_top()
         box_line("🚫 Aborted — no changes made")
