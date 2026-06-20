@@ -64,13 +64,11 @@ function t() {
     printf "\n⏱  Finished in %.2fs\n" $elapsed
 }
 
-function su {
-  if (( $+commands[surf] )); then
-    surf "$@"
-  elif (( $+commands[windsurf] )); then
-    windsurf "$@"
+function dev {
+  if (( $+commands[devin-desktop] )); then
+    devin-desktop "$@"
   else
-    echo "Neither surf nor windsurf found" >&2
+    echo "devin-desktop not found" >&2
     return 1
   fi
 }

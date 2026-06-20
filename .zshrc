@@ -47,8 +47,8 @@ alias arg="xargs"
 alias delete="rm -rf"
 alias copy="cp -R"
 
-# Added by Windsurf
-export PATH="$HOME/.codeium/windsurf/bin:$PATH"
+# Added by Devin
+export PATH="/Users/dillion/.codeium/windsurf/bin:$PATH"
 
 alias sshr="ssh-keygen -R" # remove host from known_hosts
 
