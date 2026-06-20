@@ -131,3 +131,7 @@ function reb-edit() {
 function capture() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/capture.py" "$@"
 }
+
+function fixup() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/fixup.py" "$@"
+}
