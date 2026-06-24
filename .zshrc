@@ -37,6 +37,9 @@ alias glastcom="git reset --soft HEAD~1"
 
 alias nr="npm run"
 alias ni="npm install"
+# exec: `npm install -g sfw`
+# helps with hedging against supply-chain attacks from npm packages
+alias nsi="sfw npm install"
 alias nid="npm install -D" 
 alias nu="npm uninstall"
 alias nt="npm test"
