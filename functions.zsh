@@ -74,10 +74,10 @@ function dev {
 }
 
 # grep with default options
-function gr {
+function s {
   if [[ $# -eq 0 ]]; then
-    echo "Usage: gr <pattern> [file...]"
-    echo "       ... | gr <pattern>"
+    echo "Usage: s <pattern> [file...]"
+    echo "       ... | s <pattern>"
     return 1
   elif [[ -t 0 ]]; then
     # No stdin input, use recursive grep

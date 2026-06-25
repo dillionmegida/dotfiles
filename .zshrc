@@ -10,7 +10,8 @@ source $ZSH/oh-my-zsh.sh
 
 # git aliases
 alias g="git"
-alias ga='python3 "$DOTFILES_DIR/dotfiles/scripts/git_add.py"'
+alias ga='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_add.py"'
+alias gr='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_remove.py"'
 alias gc="git checkout"
 alias gs="git status"
 
