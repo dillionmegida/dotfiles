@@ -76,6 +76,10 @@ def error(msg):
     box_bottom()
     sys.exit(1)
 
+def is_commit_hash(s):
+    import re
+    return bool(re.fullmatch(r"[0-9a-fA-F]{7,40}", s))
+
 def search_and_open(query, git_root, repo, branch, base_url):
     result = subprocess.run(
         ["git", "ls-files"],
@@ -190,6 +194,16 @@ def main():
 
     if idx < len(args):
         filepath = args[idx]
+
+    # — Commit mode —
+    if filepath and is_commit_hash(filepath):
+        url = f"{BASE_URL}/{repo}/-/commit/{filepath}"
+        box_top()
+        box_line(f"🔀 Opening commit: {filepath}")
+        box_line(f"   {url}")
+        box_bottom()
+        open_url(url)
+        return
 
     # — Search mode —
     if search_mode:

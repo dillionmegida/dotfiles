@@ -15,6 +15,7 @@ alias gc="git checkout"
 alias gs="git status"
 
 alias gb="git branch"
+alias gbm="git branch -m"
 alias gnb="git --no-pager branch"
 alias gbunset="git branch --unset-upstream"
 
@@ -34,6 +35,8 @@ alias gcom="git commit -m"
 alias gamend="git commit --amend"
 alias gnoedit="git commit --amend --no-edit"
 alias glastcom="git reset --soft HEAD~1"
+
+alias de="decodelogs"
 
 alias nr="npm run"
 alias ni="npm install"
@@ -75,3 +78,5 @@ source "$DOTFILES_DIR/dotfiles/functions.zsh"
 # ---
 
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
+# Added by Devin
+export PATH="/Users/dillion/.codeium/windsurf/bin:$PATH"
