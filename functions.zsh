@@ -7,9 +7,6 @@ function delb() {
     fi
 }
 
-function gfb() {
-    python3 "$DOTFILES_DIR/dotfiles/scripts/find_branch.py" "$@"
-}
 
 function dot() {
   local dotfiles="$DOTFILES_DIR/dotfiles"

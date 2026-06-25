@@ -12,7 +12,6 @@ source $ZSH/oh-my-zsh.sh
 alias g="git"
 alias ga='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_add.py"'
 alias gr='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_remove.py"'
-alias gc="git checkout"
 alias gs="git status"
 
 alias gb="git branch"
@@ -27,7 +26,7 @@ alias greb="git rebase"
 alias greba="git rebase --abort"
 alias grebc="git rebase --continue"
 
-alias gc="git checkout"
+alias gc='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_checkout.py"'
 alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
