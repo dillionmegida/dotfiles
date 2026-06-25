@@ -1,6 +1,7 @@
 # boxprint.py — reusable terminal box printing utilities
 
 import re
+import shutil
 import sys
 
 try:
@@ -9,7 +10,7 @@ except ImportError:
     def wcswidth(s):
         return len(s)
 
-WIDTH = 80
+WIDTH = shutil.get_terminal_size().columns - 2
 
 _EMOJI_RE = re.compile(
     "[\U0001F300-\U0001F9FF"
