@@ -132,3 +132,11 @@ function capture() {
 function fixup() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/fixup.py" "$@"
 }
+
+function blame() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/blame.py" "$@"
+}
+
+function help() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/help.py" "$@"
+}
