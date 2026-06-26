@@ -56,7 +56,7 @@ function stale {
 # Time any command
 function t() {
     local start=$EPOCHREALTIME
-    "$@"
+    eval "$@"
     local elapsed=$(( EPOCHREALTIME - start ))
     printf "\n⏱  Finished in %.2fs\n" $elapsed
 }
