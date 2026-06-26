@@ -37,6 +37,18 @@ def has_staged_changes():
 def main():
     args = sys.argv[1:]
 
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("fixup — fixup staged changes into an earlier commit")
+        box_line()
+        box_line("   Usage: fixup <N> [-y]")
+        box_line()
+        box_line("   N=1 is the latest commit, N=2 the second-to-last, etc.")
+        box_line("   -y    skip the confirmation prompt")
+        box_line("   Creates a --fixup commit then autosquashes via rebase.")
+        box_bottom()
+        return
+
     yes = "-y" in args
     args = [a for a in args if a != "-y"]
 

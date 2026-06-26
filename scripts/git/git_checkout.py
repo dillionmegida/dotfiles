@@ -52,11 +52,26 @@ def fuzzy_match_branches(query):
 
 
 def main():
+    args = sys.argv[1:]
+
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("gc — smart git checkout with fuzzy branch matching")
+        box_line()
+        box_line("   Usage: gc <branch|hash|query>")
+        box_line()
+        box_line("   Exact refs are checked out directly. Otherwise does a")
+        box_line("   case-insensitive substring match on local branches and")
+        box_line("   prompts when multiple match. Flags pass through to git.")
+        box_line()
+        box_line("   ── git checkout --help ──")
+        box_bottom()
+        subprocess.run(["git", "checkout", "--help"])
+        return
+
     if len(sys.argv) < 2:
         subprocess.run(["git", "checkout"])
         return
-
-    args = sys.argv[1:]
 
     # Pass through if any flags are present (e.g. -b, --, etc.)
     if any(a.startswith("-") for a in args):

@@ -32,14 +32,29 @@ def git_unstage(files):
 
 
 def main():
+    args = sys.argv[1:]
+
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("gr — fuzzy git unstage by filename pattern")
+        box_line()
+        box_line("   Usage: gr <pattern> [pattern2 ...]")
+        box_line("          gr .                  unstage everything")
+        box_line()
+        box_line("   Matches staged files whose basename contains <pattern>.")
+        box_line("   Flags and '.' pass straight to 'git reset HEAD'.")
+        box_line()
+        box_line("   ── git reset --help ──")
+        box_bottom()
+        subprocess.run(["git", "reset", "--help"])
+        return
+
     if len(sys.argv) < 2:
         box_top()
         box_line("Usage: gr <pattern> [pattern2 ...]")
         box_line("       gr .         (unstage everything)")
         box_bottom()
         return
-
-    args = sys.argv[1:]
 
     # Pass through special args
     if any(a.startswith("-") or a == "." for a in args):

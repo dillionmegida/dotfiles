@@ -40,14 +40,29 @@ def git_add(files):
 
 
 def main():
+    args = sys.argv[1:]
+
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("ga — fuzzy git add by filename pattern")
+        box_line()
+        box_line("   Usage: ga <pattern> [pattern2 ...]")
+        box_line("          ga .                  add everything")
+        box_line()
+        box_line("   Matches changed files whose basename contains <pattern>.")
+        box_line("   Flags and '.' are passed straight to 'git add'.")
+        box_line()
+        box_line("   ── git add --help ──")
+        box_bottom()
+        subprocess.run(["git", "add", "--help"])
+        return
+
     if len(sys.argv) < 2:
         box_top()
         box_line("Usage: ga <pattern> [pattern2 ...]")
         box_line("       ga .         (add everything)")
         box_bottom()
         return
-
-    args = sys.argv[1:]
 
     # Pass through flags and special args directly to git add
     if any(a.startswith("-") or a == "." for a in args):

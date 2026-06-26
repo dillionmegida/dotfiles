@@ -10,6 +10,17 @@ from boxprint import box_top, box_bottom, box_line
 
 def main():
     args = sys.argv[1:]
+
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("capture — run a command and save its output to a file")
+        box_line()
+        box_line("   Usage: capture [-f] <file> <command> [args...]")
+        box_line()
+        box_line("   -f    overwrite <file> if it already exists")
+        box_line("   Captures stdout+stderr from an interactive zsh shell.")
+        box_bottom()
+        return
     
     if not args:
         box_top()

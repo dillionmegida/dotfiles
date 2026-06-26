@@ -141,6 +141,19 @@ def search_and_open(query, git_root, repo, branch, base_url):
     open_url(url)
 
 def main():
+    if any(a in ("--help", "-h") for a in sys.argv[1:]):
+        box_top()
+        box_line("lab — open files/paths/commits on GitLab")
+        box_line()
+        box_line("   Usage: lab [repo] [branch] [path|hash]")
+        box_line("          lab -s <query>    search tracked files & open")
+        box_line("          lab -i <path>     skip local validation")
+        box_line()
+        box_line("   repo aliases & base_url come from $LAB_META (JSON).")
+        box_line("   Defaults to the origin remote and default branch.")
+        box_bottom()
+        return
+
     BASE_URL, REPO_MAP, REPO_ROOTS = load_meta()
     if not BASE_URL:
         error("LAB_META is not set or invalid. Add it to your .zshrc.")

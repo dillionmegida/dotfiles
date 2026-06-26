@@ -27,6 +27,16 @@ def main():
         sys.exit(1)
 
     args = sys.argv[1:]
+
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("reb-edit — interactive rebase, mark oldest commit as edit")
+        box_line()
+        box_line("   Usage: rebase-edit [n]")
+        box_line("   n — number of commits to include (default: 2)")
+        box_bottom()
+        return
+
     n = 2
     if args:
         if not args[0].isdigit():
