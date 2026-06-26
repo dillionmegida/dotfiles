@@ -9,11 +9,16 @@ function delb() {
 
 
 function dot() {
+    local quiet=false
+    if [[ "$1" == "-q" || "$1" == "--quiet" ]]; then
+        quiet=true
+        shift
+    fi
   local dotfiles="$DOTFILES_DIR/dotfiles"
   local dirty=$(git -C "$dotfiles" status --porcelain)
 
-  box start "🔄 pulling... "
-  box line ""
+  [[ "$quiet" == true ]] || box start "🔄 pulling... "
+  [[ "$quiet" == true ]] || box line ""
 
   if [[ -n "$dirty" ]]; then
       git -C "$dotfiles" stash -u &>/dev/null
@@ -24,7 +29,7 @@ function dot() {
   fi
 
   source ~/.zshrc
-  box end "✅ reloaded"
+  [[ "$quiet" == true ]] || box end "✅ reloaded"
 }
 
 function last() {

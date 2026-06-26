@@ -70,6 +70,8 @@ alias remove-from-history='$DOTFILES_DIR/dotfiles/scripts/remove_from_history.py
 
 source "$DOTFILES_DIR/dotfiles/functions.zsh"
 
+[[ -z "$DOT_AUTORUN" ]] && export DOT_AUTORUN=1 && dot -q
+
 # ---
 # ---
 # ---
