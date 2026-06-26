@@ -64,8 +64,18 @@ def main():
         box_bottom()
         return
 
-    # Pass through flags and special args directly to git add
-    if any(a.startswith("-") or a == "." for a in args):
+    # Pass through flags and path-like args directly to git add
+    def is_passthrough(a):
+        return (
+            a.startswith("-")
+            or a == "."
+            or a == ".."
+            or a.startswith("./")
+            or a.startswith("../")
+            or a.startswith("/")
+        )
+
+    if any(is_passthrough(a) for a in args):
         subprocess.run(["git", "add"] + args)
         return
 
