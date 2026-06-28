@@ -27,6 +27,7 @@ alias greba="git rebase --abort"
 alias grebc="git rebase --continue"
 
 alias gc='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_checkout.py"'
+alias gw='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_wipe.py"'
 alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
