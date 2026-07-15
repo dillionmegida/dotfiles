@@ -75,6 +75,10 @@ function dev {
   fi
 }
 
+function dbc() {
+  python3 "$DOTFILES_DIR/dotfiles/scripts/db_connect.py" "$@"
+}
+
 # grep with default options
 function s {
   if [[ $# -eq 0 ]]; then
@@ -144,4 +148,16 @@ function blame() {
 
 function help() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/help.py" "$@"
+}
+
+function gif() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/gif.py" "$@"
+}
+
+function kp() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/kill_port.py" "$@"
+}
+
+function patch() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_patch.py" "$@"
 }

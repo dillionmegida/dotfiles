@@ -15,6 +15,7 @@ alias gr='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_remove.py"'
 alias gs="git status"
 
 alias gb="git branch"
+alias gbd='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_branch_delete.py"'
 alias gbm="git branch -m"
 alias gnb="git --no-pager branch"
 alias gbunset="git branch --unset-upstream"
