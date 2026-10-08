@@ -154,6 +154,10 @@ function gif() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/gif.py" "$@"
 }
 
+function convert() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/convert.py" "$@"
+}
+
 function kp() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/kill_port.py" "$@"
 }
