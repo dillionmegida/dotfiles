@@ -38,6 +38,15 @@ def main():
 
     args = sys.argv[1:]
 
+    if args and args[0] in ("--help", "-h"):
+        box_top()
+        box_line("uncommit — soft-undo the last N commits")
+        box_line()
+        box_line("   Usage: uncommit [N]      undo N commits (default: 1)")
+        box_line("          uncommit undo     restore the last uncommit")
+        box_bottom()
+        return
+
     box_top()
 
     if args and args[0] == "undo":

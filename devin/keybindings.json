@@ -1,0 +1,120 @@
+// Place your key bindings in this file to override the defaults
+[
+  // Remap Shift+Cmd+U from toggling output panel to opening Cascade
+  {
+    "key": "shift+cmd+u",
+    "command": "-workbench.action.output.toggleOutput",
+    "when": "workbench.panel.output.active"
+  },
+  {
+    "key": "shift+cmd+u",
+    "command": "windsurf.triggerCascade",
+    "when": "true"
+  },
+  // Remap Shift+Cmd+I from Cascade to format document (replaces default Shift+Alt+F)
+  {
+    "key": "shift+cmd+i",
+    "command": "-windsurf.triggerCascade",
+    "when": "true"
+  },
+  {
+    "key": "shift+cmd+i",
+    "command": "editor.action.formatDocument",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+  },
+  {
+    "key": "shift+alt+f",
+    "command": "-editor.action.formatDocument",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+  },
+  // Remap close other editors from Alt+Cmd+T to Cmd+K Cmd+;
+  {
+    "key": "cmd+k cmd+;",
+    "command": "workbench.action.closeOtherEditors"
+  },
+  {
+    "key": "alt+cmd+t",
+    "command": "-workbench.action.closeOtherEditors"
+  },
+  // Collapse all folders in the explorer sidebar
+  {
+    "key": "cmd+k l",
+    "command": "workbench.files.action.collapseExplorerFolders"
+  },
+  // Toggle the activity bar (left sidebar icons) visibility
+  {
+    "key": "shift+cmd+b",
+    "command": "workbench.action.toggleActivityBarVisibility"
+  },
+  // --- Remap all Tab-based autocomplete/suggestion acceptance to Alt+Tab ---
+  // This frees up Tab for normal indentation while using Alt+Tab to accept suggestions
+
+  // Accept selected suggestion in debug REPL
+  {
+    "key": "alt+tab",
+    "command": "acceptSelectedSuggestion",
+    "when": "inDebugRepl && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
+  },
+  {
+    "key": "tab",
+    "command": "-acceptSelectedSuggestion",
+    "when": "inDebugRepl && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
+  },
+  // Accept inline suggestions (ghost text) in the editor
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "inlineEditIsVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+  },
+  {
+    "key": "tab",
+    "command": "-editor.action.inlineSuggest.commit",
+    "when": "inlineEditIsVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+  },
+  // Jump to inline edit location
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.jump",
+    "when": "inlineEditIsVisible && tabShouldJumpToInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+  },
+  {
+    "key": "tab",
+    "command": "-editor.action.inlineSuggest.jump",
+    "when": "inlineEditIsVisible && tabShouldJumpToInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
+  },
+  // Accept inline suggestion in the preview editor
+  {
+    "key": "alt+tab",
+    "command": "editor.action.inlineSuggest.commit",
+    "when": "inInlineEditsPreviewEditor"
+  },
+  {
+    "key": "tab",
+    "command": "-editor.action.inlineSuggest.commit",
+    "when": "inInlineEditsPreviewEditor"
+  },
+  // Accept Windsurf supercomplete (AI autocomplete) suggestions
+  {
+    "key": "alt+tab",
+    "command": "windsurf.prioritized.supercompleteAccept",
+    "when": "editorTextFocus && windsurf.richGhostTextShown && !editorHasMultilineSelection || editorTextFocus && windsurf.sideHintShown && !editorHasMultilineSelection || editorTextFocus && windsurf.tabActionShown && !editorHasMultilineSelection || editorTextFocus && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHasMultilineSelection || editorTextFocus && inlineSuggestionVisible && neovim.init && !editorHasMultilineSelection && neovim.mode == 'normal' || editorTextFocus && inlineSuggestionVisible && vim.active && !editorHasMultilineSelection && vim.mode == 'Normal'"
+  },
+  {
+    "key": "tab",
+    "command": "-windsurf.prioritized.supercompleteAccept",
+    "when": "editorTextFocus && windsurf.richGhostTextShown && !editorHasMultilineSelection || editorTextFocus && windsurf.sideHintShown && !editorHasMultilineSelection || editorTextFocus && windsurf.tabActionShown && !editorHasMultilineSelection || editorTextFocus && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHasMultilineSelection || editorTextFocus && inlineSuggestionVisible && neovim.init && !editorHasMultilineSelection && neovim.mode == 'normal' || editorTextFocus && inlineSuggestionVisible && vim.active && !editorHasMultilineSelection && vim.mode == 'Normal'"
+  },
+  // Split editor: Ctrl+Shift+\ to split, remap Cmd+K Cmd+\ for split right
+  {
+    "key": "ctrl+shift+\\",
+    "command": "workbench.action.splitEditor"
+  },
+  {
+    "key": "cmd+k cmd+\\",
+    "command": "workbench.action.splitEditorRight"
+  },
+  {
+    "key": "cmd+k cmd+\\",
+    "command": "-workbench.action.splitEditorRight"
+  }
+]

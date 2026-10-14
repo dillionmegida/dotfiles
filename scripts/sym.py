@@ -3,6 +3,8 @@
 
 import os
 import sys
+import shutil
+from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
 from boxprint import box_top, box_bottom, box_line
@@ -14,10 +16,10 @@ def resolve(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
-def create_symlink(target, link):
+def create_symlink(target, link, force=False):
     """Create a single symlink.
     Returns (status, message).
-    status: 'ok' | 'already_linked' | 'already_linked_elsewhere' | 'exists_file' | 'error'
+    status: 'ok' | 'already_linked' | 'already_linked_elsewhere' | 'exists_file' | 'error' | 'forced'
     """
     if not os.path.exists(target):
         return "error", f"Target does not exist: {target}"
@@ -26,9 +28,18 @@ def create_symlink(target, link):
         existing = os.readlink(link)
         if existing == target:
             return "already_linked", f"{link} already linked to {target}"
-        return "already_linked_elsewhere", f"{link} is linked to {existing}, not {target}"
+        if force:
+            os.unlink(link)
+        else:
+            return "already_linked_elsewhere", f"{link} is linked to {existing}, not {target}"
 
     if os.path.exists(link):
+        if force:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_path = f"{link}.backup_{timestamp}"
+            shutil.move(link, backup_path)
+            os.symlink(target, link)
+            return "forced", f"{link} → {target} (backed up to {backup_path})"
         return "exists_file", f"{link} exists as a regular file, not a symlink"
 
     # ensure parent directory exists
@@ -49,16 +60,19 @@ def main():
         box_line()
         box_line("   sym [target] [link]")
         box_line("   sym -m [targetDir] [linkDir]")
+        box_line("   sym --force [target] [link]")
+        box_line("   sym -m --force [targetDir] [linkDir]")
         box_line()
         box_line("   target/link can be relative or absolute paths.")
         box_line("   -m symlinks every entry in targetDir into linkDir.")
+        box_line("   --force backs up and overwrites existing files/symlinks.")
         box_bottom()
         return
 
-    multiple = False
-    if args[0] == "-m":
-        multiple = True
-        args = args[1:]
+    multiple = "-m" in args
+    force = "--force" in args or "-f" in args
+    
+    args = [arg for arg in args if arg not in ("-m", "--force", "-f")]
 
     if len(args) < 2:
         box_top()
@@ -74,7 +88,7 @@ def main():
 
     if multiple:
         if not os.path.isdir(target):
-            box_line(C.color("❌ Target is not a directory:", C.RED), target)
+            box_line(C.color("❌ Target is not a directory: ", C.RED) + target)
             box_bottom()
             sys.exit(1)
 
@@ -82,13 +96,13 @@ def main():
             os.makedirs(link, exist_ok=True)
 
         if not os.path.isdir(link):
-            box_line(C.color("❌ Link destination is not a directory:", C.RED), link)
+            box_line(C.color("❌ Link destination is not a directory: ", C.RED) + link)
             box_bottom()
             sys.exit(1)
 
         entries = sorted(os.listdir(target))
         if not entries:
-            box_line(C.color("⚠️  Target directory is empty:", C.YELLOW), target)
+            box_line(C.color("⚠️  Target directory is empty: ", C.YELLOW) + target)
             box_bottom()
             return
 
@@ -101,10 +115,13 @@ def main():
         for entry in entries:
             entry_target = os.path.join(target, entry)
             entry_link = os.path.join(link, entry)
-            status, msg = create_symlink(entry_target, entry_link)
+            status, msg = create_symlink(entry_target, entry_link, force=force)
 
             if status == "ok":
                 box_line(C.color(f"   ✅  {entry}", C.GREEN))
+                ok += 1
+            elif status == "forced":
+                box_line(C.color(f"   ✅  {entry} — forced (backed up existing)", C.GREEN))
                 ok += 1
             elif status == "already_linked":
                 box_line(C.color(f"   ⚠️  {entry} — already linked", C.YELLOW))
@@ -126,9 +143,11 @@ def main():
     else:
         box_line("🔗 Creating symlink:")
         box_line()
-        status, msg = create_symlink(target, link)
+        status, msg = create_symlink(target, link, force=force)
 
         if status == "ok":
+            box_line(C.color(f"   ✅  {msg}", C.GREEN))
+        elif status == "forced":
             box_line(C.color(f"   ✅  {msg}", C.GREEN))
         elif status == "already_linked":
             box_line(C.color(f"   ⏭️   Already linked: {link} → {target}", C.YELLOW))

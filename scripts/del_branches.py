@@ -36,6 +36,19 @@ def main():
         sys.exit(1)
 
     args = sys.argv[1:]
+
+    if "--help" in args:
+        box_top()
+        box_line("delb — delete one or more git branches")
+        box_line()
+        box_line("   Usage: delb [--soft|--hard] branch1 branch2 ...")
+        box_line()
+        box_line("   --soft, -s   safe delete (default, -d)")
+        box_line("   --hard, -h   force delete (-D)")
+        box_line("   Branches can also be piped/pasted multiline via stdin.")
+        box_bottom()
+        return
+
     hard = False
     branches = []
 

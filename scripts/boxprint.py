@@ -1,6 +1,7 @@
 # boxprint.py — reusable terminal box printing utilities
 
 import re
+import shutil
 import sys
 
 try:
@@ -9,7 +10,7 @@ except ImportError:
     def wcswidth(s):
         return len(s)
 
-WIDTH = 80
+WIDTH = shutil.get_terminal_size().columns - 2
 
 _EMOJI_RE = re.compile(
     "[\U0001F300-\U0001F9FF"
@@ -150,7 +151,17 @@ if __name__ == "__main__":
         cmd = sys.argv[1]
         msg = " ".join(sys.argv[2:])
 
-        if cmd == "start":
+        if cmd in ("--help", "-h"):
+            box_top()
+            box_line("box — print text inside a terminal box")
+            box_line()
+            box_line("   Usage: box <message>           one-shot box")
+            box_line("          box start <message>     open a box")
+            box_line("          box line <message>      add a line")
+            box_line("          box end <message>       close a box")
+            box_line("          <command> | box         box piped stdin")
+            box_bottom()
+        elif cmd == "start":
             box_top()
             box_line(msg)
         elif cmd == "end":

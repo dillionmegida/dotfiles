@@ -33,6 +33,14 @@ def run_git(cmd, capture=False, check=True):
         sys.exit(1)
 
 
+if len(sys.argv) == 2 and sys.argv[1] in ("--help", "-h"):
+    box_call('start', "remove-from-history — purge a file from all git history")
+    box_call('line', "Usage: remove-from-history <file-path>")
+    box_call('line', "Runs filter-branch, expires reflog, and gc's the repo.")
+    box_call('end', "⚠️  Rewrites history — requires a force-push afterward.")
+    sys.exit(0)
+
+
 if len(sys.argv) != 2:
     box_call(None, 'Usage: git remove-from-history <file-path>')
     sys.exit(1)

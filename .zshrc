@@ -10,24 +10,35 @@ source $ZSH/oh-my-zsh.sh
 
 # git aliases
 alias g="git"
-alias ga="git add"
-alias gc="git checkout"
-alias gcom="git commit -m"
+alias ga='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_add.py"'
+alias gr='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_remove.py"'
 alias gs="git status"
 
 alias gb="git branch"
+alias gbd='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_branch_delete.py"'
+alias gbm="git branch -m"
 alias gnb="git --no-pager branch"
 alias gbunset="git branch --unset-upstream"
 
+alias gpl="git pull"
 alias gps="git push"
+
 alias greb="git rebase"
-alias gc="git checkout"
+alias greba="git rebase --abort"
+alias grebc="git rebase --continue"
+
+alias gc='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_checkout.py"'
+alias gw='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_wipe.py"'
 alias gcb="git checkout -b"
 alias gst="git stash -u"
 alias gstp="git stash pop"
+
+alias gcom="git commit -m"
 alias gamend="git commit --amend"
 alias gnoedit="git commit --amend --no-edit"
 alias glastcom="git reset --soft HEAD~1"
+
+alias de="decodelogs"
 
 alias nr="npm run"
 alias ni="npm install"
@@ -44,10 +55,10 @@ alias arg="xargs"
 alias delete="rm -rf"
 alias copy="cp -R"
 
-# Added by Windsurf
-export PATH="$HOME/.codeium/windsurf/bin:$PATH"
+# Added by Devin
+export PATH="/Users/dillion/.codeium/windsurf/bin:$PATH"
 
-alias shr="ssh-keygen -R" # remove host from known_hosts
+alias sshr="ssh-keygen -R" # remove host from known_hosts
 
 # Ghostty shell integration
 if [ -n "$GHOSTTY_RESOURCES_DIR" ]; then
@@ -64,6 +75,8 @@ alias remove-from-history='$DOTFILES_DIR/dotfiles/scripts/remove_from_history.py
 
 source "$DOTFILES_DIR/dotfiles/functions.zsh"
 
+[[ -z "$DOT_AUTORUN" ]] && export DOT_AUTORUN=1 && dot -q
+
 # ---
 # ---
 # ---
@@ -72,3 +85,7 @@ source "$DOTFILES_DIR/dotfiles/functions.zsh"
 # ---
 
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

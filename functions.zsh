@@ -7,16 +7,18 @@ function delb() {
     fi
 }
 
-function gfb() {
-    python3 "$DOTFILES_DIR/dotfiles/scripts/find_branch.py" "$@"
-}
 
 function dot() {
+    local quiet=false
+    if [[ "$1" == "-q" || "$1" == "--quiet" ]]; then
+        quiet=true
+        shift
+    fi
   local dotfiles="$DOTFILES_DIR/dotfiles"
   local dirty=$(git -C "$dotfiles" status --porcelain)
 
-  box start "🔄 pulling... "
-  box line ""
+  [[ "$quiet" == true ]] || box start "🔄 pulling... "
+  [[ "$quiet" == true ]] || box line ""
 
   if [[ -n "$dirty" ]]; then
       git -C "$dotfiles" stash -u &>/dev/null
@@ -27,7 +29,7 @@ function dot() {
   fi
 
   source ~/.zshrc
-  box end "✅ reloaded"
+  [[ "$quiet" == true ]] || box end "✅ reloaded"
 }
 
 function last() {
@@ -59,27 +61,29 @@ function stale {
 # Time any command
 function t() {
     local start=$EPOCHREALTIME
-    "$@"
+    eval "$@"
     local elapsed=$(( EPOCHREALTIME - start ))
     printf "\n⏱  Finished in %.2fs\n" $elapsed
 }
 
-function su {
-  if (( $+commands[surf] )); then
-    surf "$@"
-  elif (( $+commands[windsurf] )); then
-    windsurf "$@"
+function dev {
+  if (( $+commands[devin-desktop] )); then
+    devin-desktop "$@"
   else
-    echo "Neither surf nor windsurf found" >&2
+    echo "devin-desktop not found" >&2
     return 1
   fi
 }
 
+function dbc() {
+  python3 "$DOTFILES_DIR/dotfiles/scripts/db_connect.py" "$@"
+}
+
 # grep with default options
-function gr {
+function s {
   if [[ $# -eq 0 ]]; then
-    echo "Usage: gr <pattern> [file...]"
-    echo "       ... | gr <pattern>"
+    echo "Usage: s <pattern> [file...]"
+    echo "       ... | s <pattern>"
     return 1
   elif [[ -t 0 ]]; then
     # No stdin input, use recursive grep
@@ -114,7 +118,7 @@ function gl {
   if [[ $# -eq 0 ]]; then
     git --no-pager log -1
   else
-    git log "$@"
+    git --no-pager log -"$1"
   fi
 }
 
@@ -124,4 +128,40 @@ function lab() {
 
 function sym() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/sym.py" "$@"
+}
+
+function reb-edit() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/rebase_edit.py" "$@"
+}
+
+function capture() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/capture.py" "$@"
+}
+
+function fixup() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/fixup.py" "$@"
+}
+
+function blame() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/blame.py" "$@"
+}
+
+function help() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/help.py" "$@"
+}
+
+function gif() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/gif.py" "$@"
+}
+
+function convert() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/convert.py" "$@"
+}
+
+function kp() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/kill_port.py" "$@"
+}
+
+function patch() {
+    python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_patch.py" "$@"
 }
