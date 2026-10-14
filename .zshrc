@@ -42,6 +42,9 @@ alias de="decodelogs"
 
 alias nr="npm run"
 alias ni="npm install"
+# exec: `npm install -g sfw`
+# helps with hedging against supply-chain attacks from npm packages
+alias nsi="sfw npm install"
 alias nid="npm install -D" 
 alias nu="npm uninstall"
 alias nt="npm test"
@@ -82,8 +85,6 @@ source "$DOTFILES_DIR/dotfiles/functions.zsh"
 # ---
 
 [ -f ~/.zshrc_default ] && source ~/.zshrc_default
-# Added by Devin
-export PATH="/Users/dillion/.codeium/windsurf/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
