@@ -44,8 +44,13 @@ def normalize_args(args):
     return normalized
 
 
+class BoxParser(argparse.ArgumentParser):
+    def error(self, message):
+        fail(message)
+
+
 def parse_args(args):
-    parser = argparse.ArgumentParser(
+    parser = BoxParser(
         description='Convert video with safe FFmpeg defaults',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
@@ -54,18 +59,21 @@ Examples:
   convert video.mov q=80 e=mp4
   convert video.mov q=80 o=compressed.mp4
   convert video.mov q=80 e=mp4 -f
+  convert *.mov q=80 e=mp4
         ''',
     )
-    parser.add_argument('source', help='Source video file')
+    parser.add_argument('source', nargs='+', help='Source video file(s)')
     parser.add_argument('-q', '--quality', type=int, help='Output quality from 1 to 100')
     parser.add_argument('-e', '--extension', choices=FORMATS, help='Output extension')
-    parser.add_argument('-o', '--output', help='Output path')
+    parser.add_argument('-o', '--output', help='Output path (directory when converting multiple files)')
     parser.add_argument('-f', '--force', action='store_true', help='Overwrite the destination')
     parsed = parser.parse_args(normalize_args(args))
     if parsed.quality is None and parsed.extension is None and parsed.output is None:
         fail('Pass options, e.g. q=80')
     if parsed.quality is not None and not 1 <= parsed.quality <= 100:
         fail('Quality must be between 1 and 100')
+    if len(parsed.source) > 1 and parsed.output and not Path(parsed.output).expanduser().is_dir():
+        fail('--output must be a directory when converting multiple files')
     return parsed
 
 
@@ -130,15 +138,8 @@ def ffmpeg_command(source, destination, quality, force):
     return command
 
 
-def convert(args):
-    source = Path(args.source).expanduser().resolve()
-    if not source.is_file():
-        fail(f"Source file does not exist: {args.source}")
-    if not shutil.which('ffmpeg'):
-        fail("'ffmpeg' not found. Install it with: brew install ffmpeg")
-
+def convert_file(source, args, quality):
     destination = output_path(source, args.output, args.extension, args.force)
-    quality = args.quality if args.quality is not None else 80
 
     box_top()
     box_line(f'Source: {source}')
@@ -175,7 +176,24 @@ def convert(args):
     box_bottom()
 
 
+def convert(args):
+    if not shutil.which('ffmpeg'):
+        fail("'ffmpeg' not found. Install it with: brew install ffmpeg")
+
+    sources = [Path(s).expanduser().resolve() for s in args.source]
+    for source in sources:
+        if not source.is_file():
+            fail(f"Source file does not exist: {source}")
+
+    quality = args.quality if args.quality is not None else 80
+
+    for source in sources:
+        convert_file(source, args, quality)
+
+
 def main():
+    if len(sys.argv) == 1:
+        fail('Pass a source file and options, e.g. convert video.mov q=80')
     convert(parse_args(sys.argv[1:]))
 
 

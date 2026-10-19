@@ -8,6 +8,10 @@ ZSH_THEME="robbyrussell"
 
 source $ZSH/oh-my-zsh.sh
 
+if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+  PROMPT="🫣 $PROMPT"
+fi
+
 # git aliases
 alias g="git"
 alias ga='python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_add.py"'
