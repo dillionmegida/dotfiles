@@ -165,3 +165,8 @@ function kp() {
 function patch() {
     python3 "$DOTFILES_DIR/dotfiles/scripts/git/git_patch.py" "$@"
 }
+
+# Show total disk usage for one or more files or directories.
+function size() {
+    du -sh "$@"
+}
